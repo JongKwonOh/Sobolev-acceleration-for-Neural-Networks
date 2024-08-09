@@ -1,0 +1,21 @@
+training_type : "H1"
+
+device_num : 0
+
+func:
+    func_type: "f1"  # f1 or f2
+    domain : [0, 1]
+    N : 1000 # Number of Collocation Point
+
+model :
+    model_type: "SIREN"  # FourierFeature, Standard, or SIREN
+    num_features: 64 
+
+optimizer:
+  args:
+    lr: 1.e-4
+    
+train_loop : 10 # To reduce oscillation
+epoch: 10000
+
+save_path: "./{}_{}_{}" # Sequence : Model_type, training_type, func_type
