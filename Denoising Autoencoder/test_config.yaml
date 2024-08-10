@@ -1,0 +1,10 @@
+device_num : 1
+
+test_idx : 2531
+
+s : 1 # s
+load_noise_amplitude : 2
+load_path : 'FFT_s={}_noise={}pi' # load file : [errs, model]
+ 
+save_noise_amplitude : 10
+save_path : '{}_FFT_s={}_noise={}pi.png' # test_idx, s, save_noise_amplitude

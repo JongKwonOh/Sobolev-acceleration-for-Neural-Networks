@@ -1,22 +1,10 @@
 from tqdm import tqdm_notebook
-import pickle as pkl
 import numpy as np
-import json
-import os
-
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torchvision import datasets, transforms
-
-import matplotlib.pyplot as plt
-import copy
 import yaml
-
 from model import get_model
-from data_loader import get_train_data, get_test_data
+from data_loader import get_train_dataloader, get_test_dataloader
 
 def make_freq_noisy(data, amp=0.3, noise_amplitude=2) :
     freq=noise_amplitude*np.pi
@@ -60,8 +48,8 @@ def main():
     device = torch.device(f"cuda:{config['device_num']}" if torch.cuda.is_available() else "cpu")
     save_path = save_path_template.format(power, noise_amplitude)
     
-    train_loader = get_train_data(batch_size=batch_size)
-    test_loader = get_test_data(batch_size=batch_size)
+    train_loader = get_train_dataloader(batch_size=batch_size)
+    test_loader = get_test_dataloader(batch_size=batch_size)
     first_batch = train_loader.__iter__().__next__()
     
     model = get_model(z_dim=z_dim).to(device)

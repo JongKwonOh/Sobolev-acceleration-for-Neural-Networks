@@ -1,7 +1,7 @@
 device_num : 1
 
-noise_amplitude : 2
 power : 1
+noise_amplitude : 2
 
 model :
     z_dim: 32
