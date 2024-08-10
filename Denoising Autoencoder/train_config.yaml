@@ -1,0 +1,17 @@
+device_num : 1
+
+noise_amplitude : 2
+power : 1
+
+model :
+    z_dim: 32
+
+optimizer:
+  args:
+    lr: 0.005
+    
+epoch: 20
+print_epoch : 10
+batch_size : 128
+
+save_path: 'FFT_s={}_noise={}pi' # power, noise_amplitude
