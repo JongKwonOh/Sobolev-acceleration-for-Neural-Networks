@@ -1,23 +1,22 @@
 # Sobolev acceleration for Neural Networks
 
-This repository includes the implementation for the paper titled "Sobolev Acceleration for Neural Networks."
+Official code for the paper "Sobolev acceleration for neural networks" submitted to The 39th Annual AAAI Conference on Artificial Intelligence.
 
 ## Architecture
-
-The code in that repository can implement Figure 4 of the paper.<br>
-You can run it using the command below<br>
+You can reproduce the results in Figure 4 of the manuscript by run the following command.<br>
+<br>
 `python train.py`<br>
-You can change arguments such as model type in config.yaml.
-
-## Denoising Autoencoder
-
-The code in that repository can implement Figure 6 of the paper.<br>
-You can train and save a model using the `python train.py` command.<br>
-The saved model can be reconstructed to a photo using the `python test.py` command.
 
 ## Differentiation
 
-The code in that repository can implement Figure 5 of the paper.<br>
-You can run it using the command below<br>
+You can reproduce the results in Figure 5 of the manuscript by run the following command.<br>
+<br>
 `python train.py`<br>
-You can change arguments such as train type in config.yaml.
+You can change arguments in config.yaml.
+
+
+## Denoising Autoencoder
+
+You can reproduce the results in Figure 6 of the manuscript by run the following command.<br>
+`python train.py` command.<br>
+The saved model and results can be ploted using the `python test.py` command.
