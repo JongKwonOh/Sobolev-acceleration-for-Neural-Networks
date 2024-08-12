@@ -13,7 +13,7 @@ You can change arguments such as model type in config.yaml.
 
 The code in that repository can implement Figure 6 of the paper.<br>
 You can train and save a model using the `python train.py` command.<br>
-The saved model can be restored to a photo using the `python test.py` command.
+The saved model can be reconstructed to a photo using the `python test.py` command.
 
 ## Differentiation
 
