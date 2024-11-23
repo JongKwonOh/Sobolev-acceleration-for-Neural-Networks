@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import yaml
 from model import get_model
 from func import get_functions
+from optim import get_optimizer
 
 def calculate_derivative(y, x, device) :
     return torch.autograd.grad(y, x, create_graph=True, \
@@ -30,6 +31,7 @@ def main():
     model_type = config['model']['model_type']
     num_features = config['model']['num_features']
 
+    optimizer_name = config['optimizer']['name']
     optimizer_args = config['optimizer']['args']
 
     train_loop = config['train_loop']
@@ -37,9 +39,9 @@ def main():
     save_path_template = config['save_path']
 
     device = torch.device(f"cuda:{config['device_num']}" if torch.cuda.is_available() else "cpu")
-    save_path = save_path_template.format(model_type, training_type, func_type)
+    save_path = save_path_template.format(model_type, training_type, func_type, optimizer_name)
 
-    target, target_derivative = get_functions(func_type)
+    target, target_derivative, target_der2 = get_functions(func_type)
 
     criterion = torch.nn.MSELoss()
 
@@ -47,49 +49,138 @@ def main():
     x = x.requires_grad_(True)
     u = target(x)
     u_x = target_derivative(x)
-    errs=[]
+    u_xx = target_der2(x)
+    errs = []
     
-    if training_type == 'L2':
-        for loop in tqdm_notebook(range(train_loop)) :
-            u_model = get_model(model_type, num_features).to(device) 
-            optimizer = torch.optim.Adam([{'params': u_model.parameters()}], **optimizer_args)
-            err_list=[]
-            for i in tqdm_notebook(range(epoch)) :
-                optimizer.zero_grad()
-                output = u_model(x)
-                loss = criterion(output, u)
+    errs=[]
+    training_type = 'L2'
+    save_path = save_path_template.format(model_type, training_type, func_type, optimizer_name)
+    # if training_type == 'L2':
+    for loop in tqdm_notebook(range(train_loop)):
+        u_model = get_model(model_type, num_features).to(device)
+        optimizer = get_optimizer(optimizer_name, u_model, optimizer_args)
+        err_list = []
+        
+        for i in tqdm_notebook(range(epoch)):
+            if optimizer_name.lower() == "adam":
+                optimizer.zero_grad() 
+                output = u_model(x)   
+                loss = criterion(output, u) 
                 loss.backward(retain_graph=True)
-                optimizer.step()
-                err = (output-u).pow(2).mean().item()
-                err_list.append(err)
-                if i % 1000 == 0:
-                    print('Loss : {} , Err : {}'.format(loss.item(), err))
-            errs.append(err_list)
-            
-    elif training_type == 'H1':
-        for loop in tqdm_notebook(range(train_loop)) :
-            u_model = get_model(model_type, num_features).to(device) 
-            optimizer = torch.optim.Adam([{'params': u_model.parameters()}], **optimizer_args)
-            err_list=[]
-            for i in tqdm_notebook(range(epoch)) :
-                optimizer.zero_grad()
-                output = u_model(x)
-                output_x = calculate_derivative(output, x, device)
-                loss = criterion(output, u)+criterion(output_x, u_x)
-                loss.backward(retain_graph=True)
-                optimizer.step()
-                
-                err = (output-u).pow(2).mean().item()
-                err_list.append(err)
-                if i % 1000 == 0:
-                    print('Loss : {} , Err : {}'.format(loss.item(), err))
-            errs.append(err_list)
+                optimizer.step() 
+            else:
+                def closure():
+                    optimizer.zero_grad()  
+                    output = u_model(x)   
+                    loss = criterion(output, u) 
+                    loss.backward(retain_graph=True) 
+                    return loss
 
-    else :
-        raise ValueError(f"Unknown Training type: {training_type}")
+                loss = optimizer.step(closure)  
+
+            output = u_model(x)
+            err = (output - u).pow(2).mean().item()
+            err_list.append(err)
+
+            if i % 1000 == 0:
+                print(f'Loss: {loss.item():.6f}, Err: {err:.6f}')
+        
+        errs.append(err_list)
+
+    torch.save(np.array(errs).mean(axis=0), save_path)
+    print(f"Loss saved to {save_path}")
+    
+    torch.save(u_model.state_dict(), save_path+'.pth')
+    print(f"Model saved to {save_path}")
+
+    errs = []
+    training_type = 'H1'
+    save_path = save_path_template.format(model_type, training_type, func_type, optimizer_name) 
+    # elif training_type == 'H1':
+    for loop in tqdm_notebook(range(train_loop)):
+        u_model = get_model(model_type, num_features).to(device)
+        optimizer = get_optimizer(optimizer_name, u_model, optimizer_args)
+        err_list = []
+        
+        for i in tqdm_notebook(range(epoch)):
+            if optimizer_name.lower() == "adam":
+                optimizer.zero_grad() 
+                output = u_model(x)  
+                output_x = calculate_derivative(output, x, device) 
+                loss = criterion(output, u)+crtierion(output_x, u_x)
+                loss.backward(retain_graph=True)
+                optimizer.step() 
+            else:
+                def closure():
+                    optimizer.zero_grad()  
+                    output = u_model(x)   
+                    output_x = calculate_derivative(output, x, device)
+                    loss = criterion(output, u)+criterion(output_x, u_x)
+                    loss.backward(retain_graph=True) 
+                    return loss
+
+                loss = optimizer.step(closure)  
+
+            output = u_model(x)
+            err = (output - u).pow(2).mean().item()
+            err_list.append(err)
+
+            if i % 1000 == 0:
+                print(f'Loss: {loss.item():.6f}, Err: {err:.6f}')
+        
+        errs.append(err_list)
+
+    torch.save(np.array(errs).mean(axis=0), save_path)
+    print(f"Loss saved to {save_path}")
+    
+    torch.save(u_model.state_dict(), save_path+'.pth')
+    print(f"Model saved to {save_path}")
+
+
+    errs = []
+    training_type = 'H2'
+    save_path = save_path_template.format(model_type, training_type, func_type, optimizer_name)
+    # elif training_type == 'H2':
+    for loop in tqdm_notebook(range(train_loop)):
+        u_model = get_model(model_type, num_features).to(device)
+        optimizer = get_optimizer(optimizer_name, u_model, optimizer_args)
+        err_list = []
+        
+        for i in tqdm_notebook(range(epoch)):
+            if optimizer_name.lower() == "adam":
+                optimizer.zero_grad() 
+                output = u_model(x)  
+                output_x = calculate_derivative(output, x, device) 
+                output_xx = calculate_derivative(output_x, x, device) 
+                loss = criterion(output, u)+crtierion(output_x, u_x)+crtierion(output_xx, u_xx)
+                loss.backward(retain_graph=True)
+                optimizer.step() 
+            else:
+                def closure():
+                    optimizer.zero_grad()  
+                    output = u_model(x)   
+                    output_x = calculate_derivative(output, x, device)
+                    output_xx = calculate_derivative(output_x, x, device) 
+                    loss = criterion(output, u)+criterion(output_x, u_x)+criterion(output_xx, u_xx)
+                    loss.backward(retain_graph=True) 
+                    return loss
+
+                loss = optimizer.step(closure)  
+
+            output = u_model(x)
+            err = (output - u).pow(2).mean().item()
+            err_list.append(err)
+
+            if i % 1000 == 0:
+                print(f'Loss: {loss.item():.6f}, Err: {err:.6f}')
+        
+        errs.append(err_list)
+
+    # else :
+    #     raise ValueError(f"Unknown Training type: {training_type}")
     
     torch.save(np.array(errs).mean(axis=0), save_path)
-    print(f"Error saved to {save_path}")
+    print(f"Loss saved to {save_path}")
     
     torch.save(u_model.state_dict(), save_path+'.pth')
     print(f"Model saved to {save_path}")

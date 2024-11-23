@@ -1,6 +1,6 @@
 training_type : "H1"
 
-device_num : 0
+device_num : 3
 
 func:
     func_type: "f1"  # f1 or f2
@@ -8,14 +8,15 @@ func:
     N : 1000 # Number of Collocation Point
 
 model :
-    model_type: "SIREN"  # FourierFeature, Standard, or SIREN
+    model_type: "Standard"  # FourierFeature, Standard, or SIREN
     num_features: 64 
 
 optimizer:
-  args:
-    lr: 1.e-4
+    name: "lbfgs"
+    args:
+        lr: 1.e-4
     
-train_loop : 10 # To reduce oscillation
-epoch: 10000
+train_loop : 5 # To reduce oscillation
+epoch: 10
 
-save_path: "./{}_{}_{}" # Sequence : Model_type, training_type, func_type
+save_path: "./{}_{}_{}_{}" # Sequence : Model_type, training_type, func_type
