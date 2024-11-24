@@ -17,6 +17,6 @@ optimizer:
         lr: 1.e-4
     
 train_loop : 5 # To reduce oscillation
-epoch: 10
+epoch: 50000
 
 save_path: "./{}_{}_{}_{}" # Sequence : Model_type, training_type, func_type
