@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
 import numpy as np
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 import yaml
 from model import get_model
@@ -53,19 +53,13 @@ def main():
     errs = []
     
     if training_type == 'L2':
-        for loop in tqdm_notebook(range(train_loop)):
+        for loop in tqdm(range(train_loop)):
             u_model = get_model(model_type, num_features).to(device)
             optimizer = get_optimizer(optimizer_name, u_model, optimizer_args)
             err_list = []
             
-            for i in tqdm_notebook(range(epoch)):
-                if optimizer_name.lower() == "adam":
-                    optimizer.zero_grad() 
-                    output = u_model(x)   
-                    loss = criterion(output, u) 
-                    loss.backward(retain_graph=True)
-                    optimizer.step() 
-                else:
+            for i in tqdm(range(epoch)):
+                if optimizer_name.lower() == "lbfgs":
                     def closure():
                         optimizer.zero_grad()  
                         output = u_model(x)   
@@ -73,7 +67,13 @@ def main():
                         loss.backward(retain_graph=True) 
                         return loss
 
-                    loss = optimizer.step(closure)  
+                    loss = optimizer.step(closure) 
+                else:
+                    optimizer.zero_grad() 
+                    output = u_model(x)   
+                    loss = criterion(output, u) 
+                    loss.backward(retain_graph=True)
+                    optimizer.step() 
 
                 output = u_model(x)
                 err = (output - u).pow(2).mean().item()
@@ -85,20 +85,13 @@ def main():
             errs.append(err_list)
 
     elif training_type == 'H1':
-        for loop in tqdm_notebook(range(train_loop)):
+        for loop in tqdm(range(train_loop)):
             u_model = get_model(model_type, num_features).to(device)
             optimizer = get_optimizer(optimizer_name, u_model, optimizer_args)
             err_list = []
             
-            for i in tqdm_notebook(range(epoch)):
-                if optimizer_name.lower() == "adam":
-                    optimizer.zero_grad() 
-                    output = u_model(x)  
-                    output_x = calculate_derivative(output, x, device) 
-                    loss = criterion(output, u)+crtierion(output_x, u_x)
-                    loss.backward(retain_graph=True)
-                    optimizer.step() 
-                else:
+            for i in tqdm(range(epoch)):
+                if optimizer_name.lower() == "lbfgs":
                     def closure():
                         optimizer.zero_grad()  
                         output = u_model(x)   
@@ -107,7 +100,14 @@ def main():
                         loss.backward(retain_graph=True) 
                         return loss
 
-                    loss = optimizer.step(closure)  
+                    loss = optimizer.step(closure) 
+                else:
+                    optimizer.zero_grad() 
+                    output = u_model(x)  
+                    output_x = calculate_derivative(output, x, device) 
+                    loss = criterion(output, u)+crtierion(output_x, u_x)
+                    loss.backward(retain_graph=True)
+                    optimizer.step()  
 
                 output = u_model(x)
                 err = (output - u).pow(2).mean().item()
@@ -119,21 +119,13 @@ def main():
             errs.append(err_list)
 
     elif training_type == 'H2':
-        for loop in tqdm_notebook(range(train_loop)):
+        for loop in tqdm(range(train_loop)):
             u_model = get_model(model_type, num_features).to(device)
             optimizer = get_optimizer(optimizer_name, u_model, optimizer_args)
             err_list = []
             
-            for i in tqdm_notebook(range(epoch)):
-                if optimizer_name.lower() == "adam":
-                    optimizer.zero_grad() 
-                    output = u_model(x)  
-                    output_x = calculate_derivative(output, x, device) 
-                    output_xx = calculate_derivative(output_x, x, device) 
-                    loss = criterion(output, u)+crtierion(output_x, u_x)+crtierion(output_xx, u_xx)
-                    loss.backward(retain_graph=True)
-                    optimizer.step() 
-                else:
+            for i in tqdm(range(epoch)):
+                if optimizer_name.lower() == "lbfgs":
                     def closure():
                         optimizer.zero_grad()  
                         output = u_model(x)   
@@ -144,6 +136,14 @@ def main():
                         return loss
 
                     loss = optimizer.step(closure)  
+                else:
+                    optimizer.zero_grad() 
+                    output = u_model(x)  
+                    output_x = calculate_derivative(output, x, device) 
+                    output_xx = calculate_derivative(output_x, x, device) 
+                    loss = criterion(output, u)+crtierion(output_x, u_x)+crtierion(output_xx, u_xx)
+                    loss.backward(retain_graph=True)
+                    optimizer.step() 
 
                 output = u_model(x)
                 err = (output - u).pow(2).mean().item()

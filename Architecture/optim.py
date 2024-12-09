@@ -12,5 +12,8 @@ def get_optimizer(optim_type, model, optimizer_args):
     elif optim_type=='lbfgs':
         return torch.optim.LBFGS([{'params': model.parameters()}], **optimizer_args)
 
+    elif optim_type=='sgd':
+        return torch.optim.SGD([{'params': model.parameters()}], **optimizer_args)
+
     else :
         raise ValueError(f"Unknown optimizer type: {optim_type}")

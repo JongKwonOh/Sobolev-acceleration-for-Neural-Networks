@@ -1,6 +1,6 @@
 training_type : "H1"
 
-device_num : 3
+device_num : 0
 
 func:
     func_type: "f1"  # f1 or f2
@@ -12,11 +12,11 @@ model :
     num_features: 64 
 
 optimizer:
-    name: "lbfgs"
+    name: "sgd"
     args:
         lr: 1.e-4
     
 train_loop : 5 # To reduce oscillation
 epoch: 50000
 
-save_path: "./{}_{}_{}_{}" # Sequence : Model_type, training_type, func_type
+save_path: "./save_SGD/{}_{}_{}_{}" # Sequence : Model_type, training_type, func_type
