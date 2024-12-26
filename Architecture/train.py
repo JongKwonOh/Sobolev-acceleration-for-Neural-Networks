@@ -40,7 +40,7 @@ def main():
 
     device = torch.device(f"cuda:{config['device_num']}" if torch.cuda.is_available() else "cpu")
     save_path = save_path_template.format(model_type, training_type, func_type, optimizer_name)
-
+    print(save_path)
     target, target_derivative, target_der2 = get_functions(func_type)
 
     criterion = torch.nn.MSELoss()
@@ -81,7 +81,12 @@ def main():
 
                 if i % 1000 == 0:
                     print(f'Loss: {loss.item():.6f}, Err: {err:.6f}')
-            
+
+                if err == np.nan or err > 1e5:
+                    break
+
+            if err == np.nan or err > 1e5:
+                    continue            
             errs.append(err_list)
 
     elif training_type == 'H1':
@@ -105,7 +110,7 @@ def main():
                     optimizer.zero_grad() 
                     output = u_model(x)  
                     output_x = calculate_derivative(output, x, device) 
-                    loss = criterion(output, u)+crtierion(output_x, u_x)
+                    loss = criterion(output, u)+criterion(output_x, u_x)
                     loss.backward(retain_graph=True)
                     optimizer.step()  
 
@@ -115,7 +120,13 @@ def main():
 
                 if i % 1000 == 0:
                     print(f'Loss: {loss.item():.6f}, Err: {err:.6f}')
-            
+
+                if err == np.nan or err > 1e5:
+                    break
+
+            if err == np.nan or err > 1e5:
+                    continue         
+
             errs.append(err_list)
 
     elif training_type == 'H2':
@@ -141,7 +152,7 @@ def main():
                     output = u_model(x)  
                     output_x = calculate_derivative(output, x, device) 
                     output_xx = calculate_derivative(output_x, x, device) 
-                    loss = criterion(output, u)+crtierion(output_x, u_x)+crtierion(output_xx, u_xx)
+                    loss = criterion(output, u)+criterion(output_x, u_x)+criterion(output_xx, u_xx)
                     loss.backward(retain_graph=True)
                     optimizer.step() 
 
@@ -151,7 +162,13 @@ def main():
 
                 if i % 1000 == 0:
                     print(f'Loss: {loss.item():.6f}, Err: {err:.6f}')
-            
+                    
+                if err == np.nan or err > 1e5:
+                    break
+
+            if err == np.nan or err > 1e5:
+                    continue            
+                    
             errs.append(err_list)
 
     else :

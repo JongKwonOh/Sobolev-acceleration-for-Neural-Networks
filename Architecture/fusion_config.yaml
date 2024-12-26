@@ -1,0 +1,26 @@
+training_type : "H1"
+
+device_num : 1
+
+func:
+    func_type: "f1"  # f1 or f2
+    domain : [-1, 1]
+    N : 1000 # Number of Collocation Point
+
+model :
+    model_type: "SIREN"  # FourierFeature, Standard, or SIREN
+    num_features: 64 
+
+adam_optimizer:
+    args:
+        lr: 1.e-4 
+
+lbfgs_optimizer:
+    args:
+        lr: 0.1
+
+train_loop : 5 # To reduce oscillation
+epoch: 50000
+change_optim_iter : 45000
+
+save_path: "./save_FUSION/{}_{}_{}" # Sequence : Model_type, training_type, func_type

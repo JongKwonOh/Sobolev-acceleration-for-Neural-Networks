@@ -70,7 +70,8 @@ def main():
                     loss.backward(retain_graph=True) 
                     return loss
 
-                loss = optimizer.step(closure) 
+                loss = optimizer.step(closure)
+                
             else:
                 optimizer.zero_grad() 
                 output = u_model(x)   
