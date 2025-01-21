@@ -25,6 +25,16 @@ def get_functions(func_type):
         def target_der2(x):
             return 24*torch.pi*x.pow(2)*torch.cos(torch.pi * 2 * x.pow(4)) - (8*torch.pi*x.pow(3)).pow(2)*torch.sin(torch.pi * 2 * x.pow(4))
 
+    elif func_type == 'f3':
+        def target(x):
+            return torch.exp(x) * torch.sin(20*x)
+
+        def target_derivative(x):
+            return torch.exp(x) * (torch.sin(20*x) + 20*torch.cos(20*x))
+
+        def target_der2(x):
+            return torch.exp(x) * (-399*torch.sin(20*x) + 40*torch.cos(20*x))
+
     else:
         raise ValueError(f"Unknown function type: {func_type}")
 
