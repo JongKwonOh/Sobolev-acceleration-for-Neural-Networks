@@ -1,11 +1,11 @@
 # Sobolev acceleration for Neural Networks
 
-Official code for the paper "Sobolev acceleration for neural networks" submitted to The 39th Annual AAAI Conference on Artificial Intelligence.
+Official code for the paper "Sobolev acceleration for neural networks" submitted to ICML 2025.
 
 ## Architecture
 You can reproduce the results in Figure 4 of the manuscript by run the following command.<br>
 <br>
-`python train.py`<br>
+`python fusion_train.py`<br>
 
 ## Differentiation
 
