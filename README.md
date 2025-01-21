@@ -5,7 +5,7 @@ Official code for the paper "Sobolev acceleration for neural networks" submitted
 ## Architecture
 You can reproduce the results in Figure 4 of the manuscript by run the following command.<br>
 <br>
-`python fusion_train.py`<br>
+`python fusion_optim_train.py`<br>
 
 ## Denoising Autoencoder
 
