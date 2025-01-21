@@ -7,6 +7,3 @@
 **/.ipynb_checkpoints
 **/train.ipynb
 **/*.ipynb
-
-Architecture/full_train.py 
-Architecture/train.py
