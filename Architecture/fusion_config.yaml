@@ -1,14 +1,14 @@
-training_type : "L2" # L2, H1, H2
+training_type : "H1" # L2, H1, H2
 
-device_num : 0
+device_num : 5
 
 func:
-    func_type: "f1"  # f1, f2, f3
+    func_type: "f2"  # f1, f2, f3
     domain : [-1, 1]
     N : 1000 # Number of Collocation Point
 
 model :
-    model_type: "SIREN"  # FourierFeature, Standard, or SIREN
+    model_type: "SIREN"  # FourierFeature, Standard, and SIREN
     num_features: 64 
 
 adam_optimizer:
@@ -18,6 +18,8 @@ adam_optimizer:
 lbfgs_optimizer:
     args:
         lr: 0.01
+
+test_N : 100
 
 train_loop : 20 # To reduce oscillation
 epoch: 50000

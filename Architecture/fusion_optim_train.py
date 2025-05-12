@@ -52,6 +52,9 @@ u_x = target_derivative(x)
 u_xx = target_der2(x)
 errs = []
 
+x_test = (domain[1] - domain[0]) * torch.rand(config['test_N']).view(-1,1).to(device) + domain[0]
+u_test = target(x_test)
+
 if training_type == 'L2':
     for loop in tqdm(range(train_loop)):
         u_model = get_model(model_type, num_features).to(device)
@@ -75,10 +78,14 @@ if training_type == 'L2':
                     return loss
                 loss = lbfgs_optimizer.step(closure)
     
-            output = u_model(x)
-            err = (output - u).pow(2).mean().item()
-            err_list.append(err)
+            # output = u_model(x)
+            # err = (output - u).pow(2).mean().item()
+            # err_list.append(err)
     
+            output_test = u_model(x_test)
+            err = (output_test - u_test).pow(2).mean().item()
+            err_list.append(err)
+
             if i % 1000 == 0:
                 print(f'Epoch: {i}/{epoch}, Loss: {loss.item():.6f}, Err: {err:.6f}')
 
@@ -122,8 +129,8 @@ elif training_type == 'H1':
                     return loss
                 loss = lbfgs_optimizer.step(closure) 
     
-            output = u_model(x)
-            err = (output - u).pow(2).mean().item()
+            output_test = u_model(x_test)
+            err = (output_test - u_test).pow(2).mean().item()
             err_list.append(err)
     
             if i % 1000 == 0:
@@ -171,8 +178,8 @@ elif training_type == 'H2':
                     return loss
                 loss = lbfgs_optimizer.step(closure) 
     
-            output = u_model(x)
-            err = (output - u).pow(2).mean().item()
+            output_test = u_model(x_test)
+            err = (output_test - u_test).pow(2).mean().item()
             err_list.append(err)
     
             if i % 1000 == 0:
