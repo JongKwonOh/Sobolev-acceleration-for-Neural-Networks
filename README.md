@@ -3,19 +3,19 @@
 Official code for the paper "Sobolev acceleration for neural networks" submitted to NeurIPS 2025.
 
 ## Architecture
-You can reproduce the results in Figure 6 of the manuscript by run the following command.<br>
+You can reproduce the results in Figure 3 of the manuscript by run the following command.<br>
 <br>
 `python fusion_optim_train.py`<br>
 
 ## Denoising Autoencoder
 
-You can reproduce the results in Figure 7 of the manuscript by run the following command.<br>
+You can reproduce the results in Figure 4 of the manuscript by run the following command.<br>
 `python train.py` command.<br>
 The saved model and results can be ploted using the `python test.py` command.
 
 ## Differentiation
 
-You can reproduce the results in Figure 9 of the manuscript by run the following command.<br>
+You can reproduce the results in Figure 7 of the manuscript by run the following command.<br>
 <br>
 `python train.py`<br>
 You can change arguments in config.yaml.
@@ -29,9 +29,9 @@ To reproduce the results, please first download the Mini-ImageNet dataset from t
 After downloading, make sure the dataset is placed in the appropriate directory as expected by the code (you can configure this path in `scripts/config.py`).
 
 This code is built on the [ResNet-18 Autoencoder](https://github.com/eleannavali/resnet-18-autoencoder) implementation.  
-We adapted and extended the original repository to support both $L_2$ and $H^1$ training for qualitative comparison in Figure 9 of the manuscript.
+We adapted and extended the original repository to support both $L_2$ and $H^1$ training for qualitative comparison in Figure 8 of the manuscript.
 
-You can reproduce the results shown in Figure 9 of the manuscript by running the following command:
+You can reproduce the results shown in Figure 8 of the manuscript by running the following command:
 
 <br>
 `python main.py`<br>
@@ -79,7 +79,7 @@ else:
     self.loss_func = F.mse_loss
 ```    
 
-##### Modify the `p_losses` method:
+##### Modify the `p_losses` function:
 Replace the existing code:
 ```python
 loss = F.mse_loss(model_out, target, reduction = 'none')
@@ -113,6 +113,7 @@ python celeba_train.py
 ```
 
 ### Sampling
+You can reproduce the results shown in Figure 5.
 To start sampling, run the following command:
 ```bash
 python sampling_images.py
